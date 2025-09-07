@@ -1,5 +1,7 @@
 const fs = require('fs')
 const http = require('http')
+const url = require('url');
+
 
 
 const replaceTemplate = (template, product) =>{
@@ -13,9 +15,8 @@ const replaceTemplate = (template, product) =>{
     output = output.replace(/{%ID%}/g, product.id)
     
     if (!product.organic) output = output.replace(/{%not_organic%}/g, "not_organic")
+        return output
 } 
-
-
 
 
 const cards = fs.readFileSync(`${__dirname}/templates/card_product.html`, 'utf-8')
@@ -25,12 +26,14 @@ const products = fs.readFileSync(`${__dirname}/templates/product.html`, 'utf-8')
 const productsOverview = fs.readFileSync(`${__dirname}/templates/product_overview.html`, 'utf-8')
 
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8')
-console.log(data)
+
+const dataObject = JSON.parse(data) // convert to js object/array
 
 
-const server = http.createServer((req, res) =>{
-    res.end('Server Up and running')
-})
+const server = http.createServer((req, res) => {
+const {pathname, query} = url.parse(req.url, true)
+  res.end("Check your Node terminal!");
+});
 
 server.listen(7000, '127.0.0.1', () => {
     console.log('Started Listening')
