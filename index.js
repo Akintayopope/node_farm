@@ -29,13 +29,42 @@ const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8')
 
 const dataObject = JSON.parse(data) // convert to js object/array
 
-
+// Server Creation
 const server = http.createServer((req, res) => {
-const {pathname, query} = url.parse(req.url, true)
-  res.end("Check your Node terminal!");
+ const {pathname, query} = url.parse(req.url, true)
+
+ // Overview page
+
+if (pathname === '/' || pathname === '/overview') {
+    res.writeHead(200, {"Content-type": 'text/html'})
+
+    const cardsMarkup = dataObject.map(el => replaceTemplate(cards, el)).join("")
+
+    const result = productsOverview.replace('{%product_card%}', cardsMarkup)
+
+    res.end(result)
+
+} else if (pathname === '/product') {
+    res.writeHead(200, {"Content-type": 'text/html'})
+    const product = dataObject[query.id]
+    const result = replaceTemplate(products, product)
+
+    res.end(result)
+
+} 
+// page not found
+else {
+    res.writeHead(400, {
+        "Content-type": "text/html"
+    })
+     res.end('<h1>Page not found!</h1>');
+}
+  
 });
+
 
 server.listen(7000, '127.0.0.1', () => {
     console.log('Started Listening')
 })
+
 
